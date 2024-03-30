@@ -68,8 +68,8 @@ class UR5RobotInterface(RobotInterfaceBase):
         self._payload = kwargs.get('payload', 0.0)
 
         self._filter_flag = False
-        self.qmin, self.qmax = copy.copy(ur5_constants.MIN_JOINTS),copy.copy(ur5_constants.MAX_JOINTS)
-        self.vmin, self.vmax = copy.copy(ur5_constants.MIN_VEL),copy.copy(ur5_constants.MAX_VEL)
+        self.qmin, self.qmax = copy(ur5_constants.MIN_JOINTS),copy(ur5_constants.MAX_JOINTS)
+        self.vmin, self.vmax = copy(ur5_constants.MIN_VEL),copy(ur5_constants.MAX_VEL)
         # NOTE: Danger of sharing object between processes -- dashboard client must be stateless!
         self.ur5 = ur5_driver.UR5RTDEDriver(host, self.IO_buffer, self._filter_flag, self.qmin, self.qmax, self.vmin, self.vmax, self.dashboard_client, **kwargs)
 
@@ -102,6 +102,8 @@ class UR5RobotInterface(RobotInterfaceBase):
         self._paused = False
         self._update_time = None
         self._start_time = None
+        
+        self.properties = {}
         self.properties['asynchronous'] = True
 
     def setGravityCompensation(self,gravity,load,load_com):
@@ -253,7 +255,7 @@ class UR5RobotInterface(RobotInterfaceBase):
     
     def commandedPosition(self):
         with self.IO_buffer.lock():
-            res = copy.copy(self.IO_buffer['q_commanded'])
+            res = copy(self.IO_buffer['q_commanded'])
         return res
 
     def get_current_error(self, filtered=False):
